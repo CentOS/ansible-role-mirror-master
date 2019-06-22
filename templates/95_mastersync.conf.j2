@@ -1,0 +1,9 @@
+[centos-master]
+       path = /home/
+       comment = The Master CentOS tree for all repositories
+       exclude = FOOTER.html
+       list = no
+       hosts allow = {% for ip in master_nodes_ip_list %}{{ ip }} {% endfor %}
+
+       hosts deny = *
+

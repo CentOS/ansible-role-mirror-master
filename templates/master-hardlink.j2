@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#
+# CentOS Master hardlink
+# called by: cron , managed by: ansible
+# purposes: ensure harklinks are set at the master node level
+# requirements: master.centos.org CNAME pointing to real auth source
+
+repo_list="centos centos-store centos-buildlogs"
+master=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
+hostname=$(hostname)
+master_log="/home/centos-scripts/master-hardlinks.log"
+echo "[+] $(date +%Y%m%d-%H:%M) : Starting master hardlinks process" > $master_log
+
+# Verifying if we're slave of master
+if [ "$hostname" != "$master" ] ; then 
+  echo "[+] $(date +%Y%m%d-%H:%M) : ==WARNING==" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : current hostname: $hostname" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: $master" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : Not master, exiting ..." >>$master_log
+  exit 0 
+fi
+
+for folder in ${repo_list} 
+do
+  cd /home/$folder
+   echo "[+] $(date +%Y%m%d-%H:%M) : starting hardlinks for folder /home/$folder" >>$master_log
+  /usr/sbin/hardlink -vv . >>$master_log
+  
+done
+
+
+

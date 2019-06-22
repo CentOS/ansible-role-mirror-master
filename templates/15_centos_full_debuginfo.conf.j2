@@ -1,0 +1,10 @@
+#centos-full-debuginfo
+[centos-full-debuginfo]
+       path = /home/centos-debuginfo 
+       comment = The Full CentOS Debuginfo Master 
+       exclude = .~tmp~
+       list = no
+       hosts allow = {% for host in groups['hostgroup-role-mirror-debuginfo'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+
+       hosts deny = * 
+

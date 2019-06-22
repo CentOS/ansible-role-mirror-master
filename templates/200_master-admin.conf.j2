@@ -1,0 +1,21 @@
+<VirtualHost *:80>
+     ServerAdmin webmaster@centos.org
+     ServerName master-admin.centos.org
+     ServerAlias master-adming.centos.org
+     DocumentRoot /home/centos
+
+     <Directory "/home/centos">
+     <IfVersion < 2.4>
+        Order allow,deny
+        Allow from {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
+
+     </IfVersion>
+     <IfVersion >= 2.4>
+       Require ip {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
+
+     </IfVersion>
+     
+     </Directory>
+
+</VirtualHost>
+

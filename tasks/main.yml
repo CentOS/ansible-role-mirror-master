@@ -1,1 +1,120 @@
-# Defaults tasks for role mirror-master
+- include_tasks: mirror-user.yml
+
+- import_role:
+    name: httpd
+  vars:
+    - httpd_public: False
+
+- name: Adding vhost file
+  template:
+    src: 200_master-admin.conf.j2
+    dest: /etc/httpd/conf.d/200-master-admin.conf
+  notify:
+    - restart_httpd
+  tags:
+    - httpd
+
+- name: Ensuring some selinux booleans are enabled
+  seboolean:
+    name: "{{ item }}"
+    persistent: yes
+    state: yes
+  with_items:
+    - httpd_enable_homedirs
+    - httpd_read_user_content
+
+- name: Ensuring that some needed pkgs are installed
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - bind-utils
+    - hardlink
+
+- name: CentOS Master node sync script
+  template:
+    src: rsync-master-sync.j2
+    dest: "/home/{{ mirror_local_user }}-scripts/rsync-master-sync"
+    mode: 0750
+    owner: "{{ mirror_local_user }}"
+  tags:
+    - cron
+ 
+- name: Cron job to rsync content between master nodes
+  cron:
+    name: "CentOS master rsync job"
+    job: "/home/{{ mirror_local_user }}-scripts/rsync-master-sync > /dev/null 2>&1"
+    minute: "*/5"
+    user: "{{ mirror_local_user }}"
+  tags:
+    - cron
+
+- name: Various other master node scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "/home/{{ mirror_local_user }}-scripts/{{ item }}"
+    mode: 0750
+    owner: "{{ mirror_local_user }}"
+  with_items:
+    - check-unsigned-pkgs
+    - master-dirsize
+    - master-hardlink
+    - master-set-timebit
+  tags:
+    - scripts
+
+- name: Master script jobs - {{ item }}
+  cron:
+    name: "CentOS master job - {{ item }}"
+    job: "/home/{{ mirror_local_user }}-scripts/{{ item }} > /dev/null 2>&1"
+    minute: "*"
+    user: "{{ mirror_local_user }}"
+  with_items:
+    - master-set-timebit
+  tags:
+    - cron
+
+
+- name: Master script cron jobs - {{ item }}
+  cron:
+    name: "CentOS master job - {{ item }}"
+    job: "/home/{{ mirror_local_user }}-scripts/{{ item }} > /dev/null 2>&1"
+    minute: "15"
+    hour: "1"
+    user: "{{ mirror_local_user }}"
+  with_items:
+    - master-hardlink
+  tags:
+    - cron
+
+
+- name: Master script cron jobs - {{ item }}
+  cron:
+    name: "CentOS master job - {{ item }}"
+    job: "/home/{{ mirror_local_user }}-scripts/{{ item }} > /dev/null 2>&1"
+    minute: "10"
+    user: "{{ mirror_local_user }}"
+  with_items:
+    - master-dirsize
+  tags:
+    - cron
+
+- name: Master script jobs - {{ item }}
+  cron:
+    name: "CentOS master job - {{ item }}"
+    job: "/home/{{ mirror_local_user }}-scripts/{{ item }} > /dev/null 2>&1"
+    minute: "10"
+    hour: "7"
+    user: "{{ mirror_local_user }}"
+  with_items:
+    - check-unsigned-pkgs
+  tags:
+    - cron
+
+
+- include_tasks: rsyncd.yml
+  when: mirror_rsyncd
+  tags:
+    - rsyncd
+
+#- include_tasks: monitoring.yml  

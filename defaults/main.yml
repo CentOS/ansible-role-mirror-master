@@ -1,1 +1,16 @@
 # Defaults variables for role mirror-master
+# Default user owning all the files
+mirror_local_user: centos
+
+# default path where to sync content to
+mirror_local_path: /home/centos/
+
+mirror_rsyncd: True
+
+master_nodes_ip_list:
+  - 192.168.1.1
+  - 192.168.16.16
+
+master_httpd_allow_from:
+  - 172.16.1.1
+  - 192.168.1.1

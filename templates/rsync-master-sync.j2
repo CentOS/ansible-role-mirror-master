@@ -1,0 +1,59 @@
+#!/bin/bash
+
+#
+# CentOS Master servers sync
+# called by: cron , managed by: puppet
+# purposes: keep the master servers in sync, by checking which is the authoritative source
+# requirements: master.centos.org CNAME pointing to real auth source
+
+repo_list="centos centos-buildlogs centos-cloud centos-debuginfo centos-store"
+master=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
+hostname=$(hostname)
+master_log="/home/centos-scripts/rsync-master-sync.log"
+echo "[+] $(date +%Y%m%d-%H:%M) : Starting rsync master sync master process" > $master_log
+
+# Verifying if we're slave of master
+if [ "$hostname" = "$master" ] ; then 
+  echo "[+] $(date +%Y%m%d-%H:%M) : ==WARNING==" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : current hostname: $hostname" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: $master" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : Not syncing from ourself, exiting ..." >>$master_log
+  exit 0 
+fi
+
+
+cd /home/centos-scripts
+lockfile="/home/centos-scripts/rsync-master.pid"
+running="yes"
+
+reposync() {
+  SYNCTIME=`date +%Y%m%d%H%M`
+  repo="$1"
+  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --exclude repodata --exclude headers --timeout=2400 -avzH master.centos.org::centos-master/$repo/ /home/$repo/  > /home/centos-scripts/$repo-$SYNCTIME.log 2>&1 
+  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --delete --timeout=2400 -avzH master.centos.org::centos-master/$repo/ /home/$repo/  >> /home/centos-scripts/$repo-$SYNCTIME.log 2>&1
+}
+
+if [ ! -e ${lockfile} ]; then
+   trap 'rm -f "$lockfile"; exit $?' INT TERM EXIT
+   echo "$$" > $lockfile
+   for repo in ${repo_list};
+   do
+     rm $repo-$(date +%Y)*.log
+     echo "[+] $(date +%Y%m%d-%H:%M) : Starting sync for repo $repo" >>$master_log
+     reposync $repo
+   done
+
+   rm -f "$lockfile"
+   trap - INT TERM EXIT
+else
+   proc=$(cat ${lockfile})
+   if [ $(ps -eopid | grep -c $proc) -eq 1 ]; then
+     #still running
+     echo "Old process still running"
+     exit 27
+   else
+     #old process dead
+     rm -f ${lockfile}
+   fi
+fi
+

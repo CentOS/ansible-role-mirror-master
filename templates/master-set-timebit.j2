@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#
+# CentOS Master set timebit (timestamp,TIME)
+# called by: cron , managed by: puppet
+# purposes: update TIME/timestamp.txt for known repo if on master
+# requirements: master.centos.org CNAME pointing to real auth source
+
+repo_list="centos centos/altarch centos/centos centos-cloud centos-debuginfo centos-store"
+master=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
+hostname=$(hostname)
+master_log="/home/centos-scripts/master-set-timebit.log"
+echo "[+] $(date +%Y%m%d-%H:%M) : Starting master set-timebit process" > $master_log
+
+# Verifying if we're slave of master
+if [ "$hostname" != "$master" ] ; then 
+  echo "[+] $(date +%Y%m%d-%H:%M) : ==WARNING==" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : current hostname: $hostname" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: $master" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : Not master, exiting ..." >>$master_log
+  exit 0 
+fi
+
+for folder in ${repo_list} 
+do
+  /bin/date +"%s" > /home/${folder}/TIME
+  /bin/date > /home/${folder}/timestamp.txt
+done
+
+
+

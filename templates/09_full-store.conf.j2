@@ -1,0 +1,9 @@
+#centos-full-store
+[centos-full-store]
+       path = /home/centos-store/
+       comment = CentOS Vault store
+       exclude = .~tmp~
+       list = no
+       hosts allow = {% for host in groups['hostgroup-role-mirror-vault'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+       
+       hosts deny = *

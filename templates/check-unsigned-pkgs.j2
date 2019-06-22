@@ -1,0 +1,11 @@
+#!/bin/bash
+# check number of unsigned pkgs on centos mirror
+
+PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+logfile="/var/tmp/unsigned.lst"
+pkgdir="/home/centos/"
+
+find $pkgdir -iname '*.rpm'|xargs rpm -K |egrep -vi 'pgp|gpg' > $logfile
+
+zabbix_sender -c /etc/zabbix/zabbix_agentd.conf -k msync.unsigned_pkgs -o $(wc -l $logfile |awk '{print $1}')
+
