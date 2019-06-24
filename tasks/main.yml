@@ -5,6 +5,16 @@
   vars:
     - httpd_public: False
 
+- name: Allowing src ip to reach master node
+  include_role:
+    name: iptables
+    tasks_from: custom-policy-list
+  vars:
+    iptables_policy_name: httpd-master
+    iptables_protocol: tcp
+    iptables_port: 80
+    iptables_allowed_from: "{{ master_httpd_allow_from }}"
+
 - name: Adding vhost file
   template:
     src: 200_master-admin.conf.j2
@@ -117,4 +127,4 @@
   tags:
     - rsyncd
 
-#- include_tasks: monitoring.yml  
+- include_tasks: monitoring.yml  
