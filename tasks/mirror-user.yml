@@ -5,7 +5,7 @@
     home: "/home/{{ mirror_local_user }}-home/"
 
 - name: Importing ssh pub keys for local user
-  authorized_keys:
+  authorized_key:
     user: "{{ mirror_local_user }}"
     key: "{{ item }}"
   with_items: "{{ mirror_local_user_ssh_keys }}"
