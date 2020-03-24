@@ -1,0 +1,9 @@
+#centos-buildlogs
+[centos-buildlogs]
+       path = /home/centos-buildlogs/
+       comment = The Full CentOS buildlogs
+       exclude = .~tmp~ FOOTER.html
+       list = no
+       hosts allow = {% for host in groups['hostgroup-role-mirror-buildlogs'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+       
+       hosts deny = *

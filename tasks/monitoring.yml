@@ -10,14 +10,3 @@
     - monitoring
   when: zabbix_api_srv is defined
 
-- name: Zabbix check for mirror age
-  template:
-    src: zabbix-check-msync-status.sh.j2
-    dest: /usr/lib/zabbix/zabbix-check-msync-status.sh
-    mode: 0750
-
-- name: Zabbix cron jobs
-  cron:
-    name: Mirror content status
-    job: /usr/lib/zabbix/zabbix-check-msync-status.sh
-    minute: "*/5"

@@ -8,10 +8,13 @@
   notify:
     - rebuild_rsyncd
   with_items:
-    - 95_mastersync.conf
-    - 09_full-store.conf
-    - 15_centos_full_debuginfo.conf
     - 02_centosfull.conf
+    - 06_qateam.conf
+    - 09_full-store.conf
+    - 10_centos-buildlogs.conf
+    - 15_centos_full_debuginfo.conf
+    - 16_centos_cloud.conf
+    - 95_mastersync.conf
   tags:
     - rsyncd
 

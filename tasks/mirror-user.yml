@@ -4,6 +4,12 @@
     comment: "Local CentOS mirror user"
     home: "/home/{{ mirror_local_user }}-home/"
 
+- name: Importing ssh pub keys for local user
+  authorized_keys:
+    user: "{{ mirror_local_user }}"
+    key: "{{ item }}"
+  with_items: "{{ mirror_local_user_ssh_keys }}"
+
 - name: Ensuring we have a place to store scripts (legacy compat)
   file:
     path: "/home/{{ mirror_local_user }}-scripts"

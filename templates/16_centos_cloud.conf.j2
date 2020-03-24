@@ -1,0 +1,10 @@
+#centos-cloud
+[centos-cloud]
+       path = /home/centos-cloud
+       comment = CentOS Cloud images
+       exclude = .~tmp~
+       list = no
+       hosts allow = {% for host in groups['hostgroup-role-mirror-cloud'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+
+       hosts deny = * 
+

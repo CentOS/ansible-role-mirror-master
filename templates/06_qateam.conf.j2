@@ -1,0 +1,9 @@
+#qateam
+[c5beta-qa]
+        path=/home/qa
+        comment=qa release
+        list=no
+      	hosts allow = {% for host in groups['hostgroup-role-mirror-qa'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+	
+	      hosts deny = *
+
