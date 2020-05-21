@@ -1,10 +1,11 @@
-- name: Configuring agent in Zabbix server
-  include_role:
-    name: zabbix-server
-    tasks_from: agent_config
-  vars:
-    zabbix_templates: "{{ master_zabbix_templates }}"
-    zabbix_groups: "{{ master_zabbix_groups }}"
+- block:
+    - name: Configuring agent in Zabbix server
+      include_role:
+        name: zabbix-server
+        tasks_from: agent_config
+      vars:
+        zabbix_templates: "{{ master_zabbix_templates }}"
+        zabbix_groups: "{{ master_zabbix_groups }}"
   delegate_to: "{{ zabbix_api_srv }}"  
   tags:
     - monitoring

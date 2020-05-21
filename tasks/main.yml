@@ -35,11 +35,8 @@
 
 - name: Ensuring that some needed pkgs are installed
   yum:
-    name: "{{ item }}"
+    name: ['bind-utils','hardlink']
     state: installed
-  with_items:
-    - bind-utils
-    - hardlink
 
 - name: CentOS Master node sync script
   template:
