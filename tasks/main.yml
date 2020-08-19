@@ -19,6 +19,7 @@
   template:
     src: 200_master-admin.conf.j2
     dest: /etc/httpd/conf.d/200-master-admin.conf
+    mode: 0644
   notify:
     - restart_httpd
   tags:
