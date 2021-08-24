@@ -6,7 +6,7 @@
 # purposes: keep the master servers in sync, by checking which is the authoritative source
 # requirements: master.centos.org CNAME pointing to real auth source
 
-repo_list="centos centos-buildlogs centos-cloud centos-debuginfo centos-store"
+repo_list="centos centos-stream centos-buildlogs centos-cloud centos-debuginfo centos-store"
 master=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
 hostname=$(hostname)
 master_log="/home/centos-scripts/rsync-master-sync.log"

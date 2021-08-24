@@ -39,3 +39,4 @@
     - centos-debuginfo
     - centos-buildlogs
     - centos-cloud
+    - centos-stream

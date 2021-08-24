@@ -6,7 +6,7 @@
 # purposes: update TIME/timestamp.txt for known repo if on master
 # requirements: master.centos.org CNAME pointing to real auth source
 
-repo_list="centos centos/altarch centos/centos centos-cloud centos-debuginfo centos-store"
+repo_list="centos centos-stream centos/altarch centos/centos centos-cloud centos-debuginfo centos-store"
 master=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
 hostname=$(hostname)
 master_log="/home/centos-scripts/master-set-timebit.log"

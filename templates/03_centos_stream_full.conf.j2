@@ -1,0 +1,9 @@
+[centos-stream-full]
+	path = /home/centos-stream
+	comment = The official CentOS Stream Mirror
+        exclude = FOOTER.html
+        list = no
+	hosts allow = {% for host in groups['hostgroup-role-mirror'] %}{{ hostvars[host].ip }} {% if hostvars[host].ipv6 is defined %}{{ hostvars[host].ipv6 }} {% endif %}{% endfor %}
+
+	hosts deny = *
+

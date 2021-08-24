@@ -10,6 +10,7 @@
     - rebuild_rsyncd
   with_items:
     - 02_centosfull.conf
+    - 03_centos_stream_full.conf
     - 06_qateam.conf
     - 09_full-store.conf
     - 10_centos-buildlogs.conf
