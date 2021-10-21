@@ -14,6 +14,8 @@
     iptables_protocol: tcp
     iptables_port: 80
     iptables_allowed_from: "{{ master_httpd_allow_from }}"
+  tags:
+    - iptables
 
 - name: Adding vhost file
   template:

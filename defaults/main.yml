@@ -6,6 +6,7 @@ mirror_local_user_ssh_keys: []
 
 # default path where to sync content to
 mirror_local_path: /home/centos/
+mirror_stream_local_path: /home/centos-stream/
 
 mirror_rsyncd: True
 

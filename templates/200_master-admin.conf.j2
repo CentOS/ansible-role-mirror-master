@@ -2,9 +2,11 @@
      ServerAdmin webmaster@centos.org
      ServerName master-admin.centos.org
      ServerAlias master-adming.centos.org
-     DocumentRoot /home/centos
+     DocumentRoot {{ mirror_local_path }}
+     Alias "/9-stream" "{{ mirror_stream_local_path }}/9-stream"
+     Alias "/SIGs" "{{ mirror_stream_local_path }}/SIGs"
 
-     <Directory "/home/centos">
+     <Directory "{{ mirror_local_path }}">
      <IfVersion < 2.4>
         Order allow,deny
         Allow from {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
@@ -14,7 +16,18 @@
        Require ip {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
 
      </IfVersion>
-     
+     </Directory>
+
+     <Directory "{{ mirror_stream_local_path }}">
+     <IfVersion < 2.4>
+        Order allow,deny
+        Allow from {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
+
+     </IfVersion>
+     <IfVersion >= 2.4>
+       Require ip {% for ip in master_httpd_allow_from %}{{ ip }} {% endfor %}
+
+     </IfVersion>
      </Directory>
 
 </VirtualHost>
