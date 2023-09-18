@@ -15,10 +15,13 @@ echo "[+] $(date +%Y%m%d-%H:%M) : Starting rsync master sync master process" > $
 # Verifying if we're slave of master
 if [ "$hostname" = "$master" ] ; then 
   echo "[+] $(date +%Y%m%d-%H:%M) : ==WARNING==" >>$master_log
-  echo "[+] $(date +%Y%m%d-%H:%M) : current hostname: $hostname" >>$master_log
-  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: $master" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : current local hostname: [${hostname}]" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: [${master}]" >>$master_log
   echo "[+] $(date +%Y%m%d-%H:%M) : Not syncing from ourself, exiting ..." >>$master_log
   exit 0 
+else
+  echo "[+] $(date +%Y%m%d-%H:%M) : centos master in DNS: [${master}]" >>$master_log
+  echo "[+] $(date +%Y%m%d-%H:%M) : pulling content from [${master}]" >>$master_log
 fi
 
 
@@ -29,8 +32,8 @@ running="yes"
 reposync() {
   SYNCTIME=`date +%Y%m%d%H%M`
   repo="$1"
-  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --exclude repodata --exclude headers --timeout=2400 -avzH master.centos.org::centos-master/$repo/ /home/$repo/  > /home/centos-scripts/$repo-$SYNCTIME.log 2>&1 
-  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --delete --timeout=2400 -avzH master.centos.org::centos-master/$repo/ /home/$repo/  >> /home/centos-scripts/$repo-$SYNCTIME.log 2>&1
+  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --exclude repodata --exclude headers --timeout=2400 -avzH ${master}::centos-master/$repo/ /home/$repo/  > /home/centos-scripts/$repo-$SYNCTIME.log 2>&1 
+  rsync --force --partial --exclude ".~tmp~" --exclude ".*iso.*" --exclude ".*.rpm.*" --exclude FOOTER.html --delay-updates --delete --timeout=2400 -avzH ${master}::centos-master/$repo/ /home/$repo/  >> /home/centos-scripts/$repo-$SYNCTIME.log 2>&1
 }
 
 if [ ! -e ${lockfile} ]; then

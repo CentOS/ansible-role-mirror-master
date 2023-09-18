@@ -49,6 +49,7 @@
     owner: "{{ mirror_local_user }}"
   tags:
     - cron
+    - scripts
  
 - name: Cron job to rsync content between master nodes
   cron:
