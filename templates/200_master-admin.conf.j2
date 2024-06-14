@@ -3,6 +3,7 @@
      ServerName master-admin.centos.org
      ServerAlias master-adming.centos.org
      DocumentRoot {{ mirror_local_path }}
+     Alias "/10-stream" "{{ mirror_stream_local_path }}/10-stream"
      Alias "/9-stream" "{{ mirror_stream_local_path }}/9-stream"
      Alias "/SIGs" "{{ mirror_stream_local_path }}/SIGs"
 
