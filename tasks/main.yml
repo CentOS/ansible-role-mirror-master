@@ -71,6 +71,8 @@
     - master-dirsize
     - master-hardlink
     - master-set-timebit
+    - create-filelist-cron
+    - create-filelist
   tags:
     - scripts
 
@@ -107,6 +109,17 @@
     user: "{{ mirror_local_user }}"
   with_items:
     - master-dirsize
+  tags:
+    - cron
+
+- name: Master script cron jobs - {{ item }}
+  cron:
+    name: "CentOS master job - {{ item }}"
+    job: "/home/{{ mirror_local_user }}-scripts/{{ item }} > /dev/null 2>&1"
+    minute: '*/5'
+    user: "{{ mirror_local_user }}"
+  with_items:
+    - create-filelist-cron
   tags:
     - cron
 

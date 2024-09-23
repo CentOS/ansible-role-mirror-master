@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#
+# CentOS create-filelist
+# called by: cron , managed by: Ansible
+# purposes: generates fullfiletimelist index file for CentOS Stream content
+# requirements: master.centos.org CNAME pointing to real auth source
+
+main_mirror_ref=$(dig -t CNAME +short +noshort master.centos.org|awk '{print $5}'|sed 's/.$//')
+hostname=$(hostname)
+
+# Verifying if we're authoritative or not (main reference mirror)
+if [ "$hostname" == "${main_mirror_ref}" ] ; then 
+  cd {{ mirror_stream_local_path }}
+  /home/centos-scripts/create-filelist -t fullfiletimelist
+fi
+
+
+
